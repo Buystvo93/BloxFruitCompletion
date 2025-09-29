@@ -6,10 +6,16 @@
   <style>
     body { font-family: Arial, sans-serif; background:#0c0c0c; color:#fff; text-align:center; }
     h1 { color:#ffcc00; }
-    .section { background:#1c1c1c; margin:15px auto; padding:15px; border-radius:10px; width:80%; max-width:500px; text-align:left; }
+    .section { background:#1c1c1c; margin:15px auto; padding:15px; border-radius:10px; width:80%; max-width:600px; text-align:left; }
     .progress-container { width:80%; margin:20px auto; background:#333; border-radius:10px; }
     .progress-bar { height:25px; width:0; background:linear-gradient(90deg,#ffcc00,#ffaa00); transition:width 0.3s; }
     input[type="number"] { width:100%; padding:8px; border-radius:5px; border:none; margin-top:8px; font-size:16px; }
+
+    .icon-grid { display:flex; flex-wrap:wrap; gap:10px; }
+    .item { width:80px; text-align:center; cursor:pointer; }
+    .item img { width:70px; height:70px; border-radius:10px; border:3px solid transparent; transition:0.2s; }
+    .item.collected img { border-color:#ffcc00; filter:brightness(1.2); }
+    .item span { display:block; margin-top:5px; font-size:14px; }
   </style>
 </head>
 <body>
@@ -20,20 +26,36 @@
 
   <div class="section">
     <h2>Swords</h2>
-    <label><input type="checkbox" class="task" value="cutlass"> Cutlass</label>
-    <label><input type="checkbox" class="task" value="dblkatana"> Double Katana</label>
-    <label><input type="checkbox" class="task" value="katana"> Katana</label>
-    <label><input type="checkbox" class="task" value="ironmace"> Iron Mace</label>
+    <div class="icon-grid">
+      <div class="item task" data-id="cutlass">
+        <img src="images/cutlass.png" alt="Cutlass">
+        <span>Cutlass</span>
+      </div>
+      <div class="item task" data-id="dblkatana">
+        <img src="images/dblkatana.png" alt="Double Katana">
+        <span>Double Katana</span>
+      </div>
+      <div class="item task" data-id="katana">
+        <img src="images/katana.png" alt="Katana">
+        <span>Katana</span>
+      </div>
+      <div class="item task" data-id="ironmace">
+        <img src="images/ironmace.png" alt="Iron Mace">
+        <span>Iron Mace</span>
+      </div>
+    </div>
   </div>
 
   <div class="section">
     <h2>Races</h2>
-    <label><input type="checkbox" class="task" value="human"> Human</label>
-    <label><input type="checkbox" class="task" value="shark"> Shark</label>
-    <label><input type="checkbox" class="task" value="rabbit"> Rabbit</label>
-    <label><input type="checkbox" class="task" value="angel"> Angel</label>
-    <label><input type="checkbox" class="task" value="ghoul"> Ghoul</label>
-    <label><input type="checkbox" class="task" value="cyborg"> Cyborg</label>
+    <div class="icon-grid">
+      <div class="item task" data-id="human"><img src="human.png"><span>Human</span></div>
+      <div class="item task" data-id="shark"><img src="shark.png"><span>Shark</span></div>
+      <div class="item task" data-id="rabbit"><img src="rabbit.png"><span>Rabbit</span></div>
+      <div class="item task" data-id="angel"><img src="angel.png"><span>Angel</span></div>
+      <div class="item task" data-id="ghoul"><img src="ghoul.png"><span>Ghoul</span></div>
+      <div class="item task" data-id="cyborg"><img src="cyborg.png"><span>Cyborg</span></div>
+    </div>
   </div>
 
   <div class="section">
@@ -43,7 +65,7 @@
   </div>
 
 <script>
-const STORAGE_KEY = "bloxfruits_progress_v2";
+const STORAGE_KEY = "bloxfruits_progress_icons";
 let currentData = {};
 
 // Load saved progress
@@ -51,10 +73,16 @@ function loadProgress() {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) currentData = JSON.parse(saved);
 
-  // Apply checkbox states
-  document.querySelectorAll(".task").forEach(chk => {
-    chk.checked = currentData[chk.value] || false;
-    chk.onchange = saveProgress;
+  // Apply saved state to items
+  document.querySelectorAll(".task").forEach(item => {
+    let id = item.dataset.id;
+    if (currentData[id]) item.classList.add("collected");
+
+    item.onclick = () => {
+      item.classList.toggle("collected");
+      currentData[id] = item.classList.contains("collected");
+      saveProgress();
+    };
   });
 
   // Apply level
@@ -67,12 +95,12 @@ function loadProgress() {
 
 // Save progress
 function saveProgress() {
-  // Save checkboxes
-  document.querySelectorAll(".task").forEach(chk => {
-    currentData[chk.value] = chk.checked;
+  // Save collected items
+  document.querySelectorAll(".task").forEach(item => {
+    currentData[item.dataset.id] = item.classList.contains("collected");
   });
 
-  // Save level (max 2800 enforced)
+  // Save level
   let levelInput = document.getElementById("levelInput");
   let level = parseInt(levelInput.value) || 0;
   if (level > 2800) level = 2800;
@@ -87,9 +115,9 @@ function saveProgress() {
 // Update progress bar
 function updateProgress() {
   const tasks = document.querySelectorAll('.task');
-  const completed = document.querySelectorAll('.task:checked').length;
+  const completed = document.querySelectorAll('.task.collected').length;
 
-  // Each checkbox = 1 task
+  // Each icon = 1 task
   const totalTasks = tasks.length + 1; // +1 for level
   let score = completed;
 
