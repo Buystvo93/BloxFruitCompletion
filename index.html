@@ -13,9 +13,11 @@
 
     .icon-grid { display:flex; flex-wrap:wrap; gap:10px; }
     .item { width:80px; text-align:center; cursor:pointer;}
-    .item img { width:70px; height:70px; border-radius:10px; border:3px solid transparent; transition:0.2s;  background-color:#d3d3d3; }
+    .item img { width:70px; height:70px; border-radius:10px; border:3px solid transparent; transition:0.2s; }
     .item.collected img { border-color:#ffcc00; filter:brightness(1.2); }
     .item span { display:block; margin-top:5px; font-size:14px; }
+    #Uncommon { background-color: #5c83ff; }
+    #Common { background-color: #d3d3d3; }
   </style>
 </head>
 <body>
@@ -27,7 +29,7 @@
   <div class="section">
     <h2>Swords</h2>
     <div class="icon-grid">
-      <div class="item task" data-id="cutlass">
+      <div class="item task" data-id="cutlass" id="Common">
         <img src="images/cutlass.png" alt="Cutlass">
         <span>Cutlass</span>
       </div>
@@ -40,7 +42,7 @@
         <span>Katana</span>
       </div>
       <div class="item task" data-id="ironmace">
-        <img src="images/ironmace.png" alt="Iron Mace">
+        <img src="images/ironmace.png" alt="Iron Mace" id="Uncommon">
         <span>Iron Mace</span>
       </div>
     </div>
@@ -67,6 +69,8 @@
 <script>
 const STORAGE_KEY = "bloxfruits_progress_icons";
 let currentData = {};
+
+
 
 // Load saved progress
 function loadProgress() {
