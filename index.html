@@ -9,6 +9,7 @@
     .section { background:#1c1c1c; margin:15px auto; padding:15px; border-radius:10px; width:80%; max-width:500px; text-align:left; }
     .progress-container { width:80%; margin:20px auto; background:#333; border-radius:10px; }
     .progress-bar { height:25px; width:0; background:linear-gradient(90deg,#ffcc00,#ffaa00); transition:width 0.3s; }
+    input[type="number"] { width:100%; padding:8px; border-radius:5px; border:none; margin-top:8px; font-size:16px; }
   </style>
 </head>
 <body>
@@ -36,39 +37,66 @@
 
   <div class="section">
     <h2>Level</h2>
-    <label><input type="checkbox" class="task" value="maxlevel"> Reached Level 2550 (Max)</label>
+    <label for="levelInput">Enter your level (max 2800):</label>
+    <input type="number" id="levelInput" min="1" max="2800">
   </div>
 
 <script>
-const STORAGE_KEY = "bloxfruits_progress";
+const STORAGE_KEY = "bloxfruits_progress_v2";
 let currentData = {};
 
-// Load saved progress from localStorage
+// Load saved progress
 function loadProgress() {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) currentData = JSON.parse(saved);
 
+  // Apply checkbox states
   document.querySelectorAll(".task").forEach(chk => {
     chk.checked = currentData[chk.value] || false;
     chk.onchange = saveProgress;
   });
+
+  // Apply level
+  const levelInput = document.getElementById("levelInput");
+  levelInput.value = currentData.level || "";
+  levelInput.oninput = saveProgress;
+
   updateProgress();
 }
 
-// Save progress to localStorage
+// Save progress
 function saveProgress() {
+  // Save checkboxes
   document.querySelectorAll(".task").forEach(chk => {
     currentData[chk.value] = chk.checked;
   });
+
+  // Save level (max 2800 enforced)
+  let levelInput = document.getElementById("levelInput");
+  let level = parseInt(levelInput.value) || 0;
+  if (level > 2800) level = 2800;
+  if (level < 0) level = 0;
+  levelInput.value = level;
+  currentData.level = level;
+
   localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData));
   updateProgress();
 }
 
-// Update progress bar + text
+// Update progress bar
 function updateProgress() {
   const tasks = document.querySelectorAll('.task');
   const completed = document.querySelectorAll('.task:checked').length;
-  const percent = Math.round((completed / tasks.length) * 100);
+
+  // Each checkbox = 1 task
+  const totalTasks = tasks.length + 1; // +1 for level
+  let score = completed;
+
+  // Level contribution
+  let level = currentData.level || 0;
+  score += level / 2800; // scales 0 → 1
+
+  const percent = Math.round((score / totalTasks) * 100);
   document.getElementById("progressBar").style.width = percent + "%";
   document.getElementById("progressText").textContent = percent + "% Completed";
 }
