@@ -73,12 +73,12 @@ let currentData = {};
 
 
 
-// Load saved progress
+
 function loadProgress() {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) currentData = JSON.parse(saved);
 
-  // Apply saved state to items
+  
   document.querySelectorAll(".task").forEach(item => {
     let id = item.dataset.id;
     if (currentData[id]) item.classList.add("collected");
@@ -90,7 +90,7 @@ function loadProgress() {
     };
   });
 
-  // Apply level
+
   const levelInput = document.getElementById("levelInput");
   levelInput.value = currentData.level || "";
   levelInput.oninput = saveProgress;
@@ -98,14 +98,14 @@ function loadProgress() {
   updateProgress();
 }
 
-// Save progress
+
 function saveProgress() {
-  // Save collected items
+ 
   document.querySelectorAll(".task").forEach(item => {
     currentData[item.dataset.id] = item.classList.contains("collected");
   });
 
-  // Save level
+
   let levelInput = document.getElementById("levelInput");
   let level = parseInt(levelInput.value) || 0;
   if (level > 2800) level = 2800;
@@ -117,25 +117,25 @@ function saveProgress() {
   updateProgress();
 }
 
-// Update progress bar
+
 function updateProgress() {
   const tasks = document.querySelectorAll('.task');
   const completed = document.querySelectorAll('.task.collected').length;
 
-  // Each icon = 1 task
-  const totalTasks = tasks.length + 1; // +1 for level
+ 
+  const totalTasks = tasks.length + 1; 
   let score = completed;
 
-  // Level contribution
+
   let level = currentData.level || 0;
-  score += level / 2800; // scales 0 → 1
+  score += level / 2800;
 
   const percent = Math.round((score / totalTasks) * 100);
   document.getElementById("progressBar").style.width = percent + "%";
   document.getElementById("progressText").textContent = percent + "% Completed";
 }
 
-// Init
+
 loadProgress();
 </script>
 </body>
