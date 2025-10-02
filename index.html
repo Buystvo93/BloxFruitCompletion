@@ -20,6 +20,7 @@
     #Common { background-color: #d3d3d3; }
     .race { background-color: #44b83b; }
     #Rare { background-color: #a927f5; }
+    .section h2 span { font-size:14px; color:#aaa; margin-left:8px; }
   </style>
 </head>
 <body>
@@ -28,8 +29,8 @@
   <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
   <p id="progressText">0% Completed</p>
 
-  <div class="section">
-    <h2>Swords</h2>
+  <div class="section" id="swordsSection">
+    <h2>Swords <span id="swordsProgress"></span></h2>
     <div class="icon-grid">
       <div class="item task" data-id="cutlass">
         <img src="images/cutlass.png" alt="Cutlass" id="Common">
@@ -70,16 +71,16 @@
     </div>
   </div>
 
-  <div class="section">
-    <h2>Races V4</h2>
+  <div class="section" id="racesSection">
+    <h2>Races V4 <span id="racesProgress"></span></h2>
     <div class="icon-grid">
       <div class="item task" data-id="human"><img src="human.png"><span>Human</span></div>
       <div class="item task" data-id="shark"><img src="shark.png"><span>Shark</span></div>
       <div class="item task" data-id="rabbit"><img src="rabbit.png"><span>Rabbit</span></div>
       <div class="item task" data-id="angel"><img src="angel.png"><span>Angel</span></div>
-      <div class="item task" data-id="ghoul"><img src="images/ghoul.png" class="race""><span>Ghoul</span></div>
+      <div class="item task" data-id="ghoul"><img src="images/ghoul.png" class="race"><span>Ghoul</span></div>
       <div class="item task" data-id="cyborg"><img src="cyborg.png"><span>Cyborg</span></div>
-      <div class="item task" data-id="draco"><img src="draco"><span>Draco</span></div>
+      <div class="item task" data-id="draco"><img src="draco.png"><span>Draco</span></div>
     </div>
   </div>
 
@@ -93,14 +94,10 @@
 const STORAGE_KEY = "bloxfruits_progress_icons";
 let currentData = {};
 
-
-
-
 function loadProgress() {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) currentData = JSON.parse(saved);
 
-  
   document.querySelectorAll(".task").forEach(item => {
     let id = item.dataset.id;
     if (currentData[id]) item.classList.add("collected");
@@ -112,7 +109,6 @@ function loadProgress() {
     };
   });
 
-
   const levelInput = document.getElementById("levelInput");
   levelInput.value = currentData.level || "";
   levelInput.oninput = saveProgress;
@@ -120,13 +116,10 @@ function loadProgress() {
   updateProgress();
 }
 
-
 function saveProgress() {
- 
   document.querySelectorAll(".task").forEach(item => {
     currentData[item.dataset.id] = item.classList.contains("collected");
   });
-
 
   let levelInput = document.getElementById("levelInput");
   let level = parseInt(levelInput.value) || 0;
@@ -139,15 +132,12 @@ function saveProgress() {
   updateProgress();
 }
 
-
 function updateProgress() {
   const tasks = document.querySelectorAll('.task');
   const completed = document.querySelectorAll('.task.collected').length;
 
- 
   const totalTasks = tasks.length + 1; 
   let score = completed;
-
 
   let level = currentData.level || 0;
   score += level / 2800;
@@ -155,8 +145,18 @@ function updateProgress() {
   const percent = Math.round((score / totalTasks) * 100);
   document.getElementById("progressBar").style.width = percent + "%";
   document.getElementById("progressText").textContent = percent + "% Completed";
+
+  // Section-specific counts
+  updateSectionProgress("swordsSection", "swordsProgress");
+  updateSectionProgress("racesSection", "racesProgress");
 }
 
+function updateSectionProgress(sectionId, progressId) {
+  const section = document.getElementById(sectionId);
+  const items = section.querySelectorAll(".task");
+  const collected = section.querySelectorAll(".task.collected").length;
+  document.getElementById(progressId).textContent = `(${collected} / ${items.length})`;
+}
 
 loadProgress();
 </script>
