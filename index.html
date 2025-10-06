@@ -197,6 +197,25 @@
     </div>
   </div>
 
+
+  <div class="section" id="accesSection">
+    <h2>Accessories <span id="accesProgress"></span></h2>
+    <div class="icon-grid">
+      <div class="item task" data-id="blueheadband">
+        <img src="images/blueheadband.png" alt="blueheadband" id="Common">
+        <span>Headband (Blue)</span>
+      </div>
+      <div class="item task" data-id="greenheadband">
+        <img src="images/greenheadband.png" alt="greenheadband" id="Common">
+        <span>Headband (Green)</span>
+      </div>
+      <div class="item task" data-id="orangeheadband">
+        <img src="images/orangeheadband.png" alt="orangeheadband" id="Common">
+        <span>Headband (Orange)</span>
+      </div>
+    </div>
+  </div>
+  
   <div class="section" id="racesSection">
     <h2>Races V4 <span id="racesProgress"></span></h2>
     <div class="icon-grid">
@@ -287,6 +306,7 @@ function updateProgress() {
   // Section-specific counts
   updateSectionProgress("swordsSection", "swordsProgress");
   updateSectionProgress("racesSection", "racesProgress");
+  updateSectionProgress("accesSection", "accesProgress");
 }
 
 function updateSectionProgress(sectionId, progressId) {
